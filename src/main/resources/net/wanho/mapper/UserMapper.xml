@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间指向对应的接口-->
+<mapper namespace="net.wanho.mapper.UserMapper">
+
+    <!--id对应接口中过的方法名   parameterType对应参数类型-->
+    <insert id="addUser" parameterType="User">
+      INSERT INTO user VALUE (null,#{username},#{password})
+    </insert>
+    <!--添加返回主键方式一-->
+    <insert id="addUserReturnKey" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user VALUE (null,#{username},#{password})
+    </insert>
+    <!--添加返回主键方式二-->
+    <insert id="addUserReturnKey2">
+        <selectKey keyProperty="id" order="AFTER" resultType="int">
+            SELECT last_insert_id()
+        </selectKey>
+        INSERT INTO user VALUE (null,#{username},#{password})
+    </insert>
+    <!--修改-->
+    <update id="updateUser">
+        UPDATE USER SET username=#{name},password=#{password} where id=#{id}
+    </update>
+    <!--多个参数传递-->
+    <update id="updateUser2">
+        UPDATE USER SET username=#{name},password=#{pwd} where id=#{id}
+    </update>
+    <!--多个复杂参数传递-->
+    <update id="updateUser3">
+        UPDATE USER SET username=#{user.name},password=#{user.password} where id=#{id}
+    </update>
+    <!--删除-->
+    <delete id="deleteUser">
+        DELETE FROM user WHERE id=#{id}
+    </delete>
+
+    <!--结果集映射===property与实体类里面属性名对应-->
+    <resultMap id="userMap" type="User">
+        <id column="id" property="id"/>
+        <result column="username" property="name"/>
+        <result column="password" property="password"/>
+    </resultMap>
+    <!--resultType 返回值类型-->
+    <select id="selectAllUser" resultMap="userMap">
+        SELECT id,username,password from USER
+    </select>
+    <select id="selectUserById" resultType="net.wanho.pojo.User">
+        SELECT * FROM USER WHERE id=#{id}
+    </select>
+    <select id="selectUserByName" resultType="net.wanho.pojo.User" parameterType="string">
+        SELECT * FROM user WHERE USERNAME =#{name}
+    </select>
+    <select id="selectUserByName2" resultType="net.wanho.pojo.User">
+        SELECT * FROM user where username like concat("%",#{name},"%")
+    </select>
+    <!--对应实体类里面的属性-->
+    <select id="selectUserByName3" resultType="net.wanho.pojo.User">
+        SELECT * FROM user where username like #{username}
+    </select>
+</mapper>
